@@ -1,2 +1,5 @@
-# FirstPersonHorror_CODEONLY
-The code for a first person horror game made with C# and the Unity game engine
+# First Person Horror Game - CODE ONLY
+
+This repository contains the C# scripts for my unity game. This is still a work in progress.
+
+# What's included:
