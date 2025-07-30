@@ -38,11 +38,6 @@ public class GameManager : MonoBehaviour
         playerRoomPosition = HouseRooms.None;
     }
 
-    private void Start()
-    {
-        TaskManager.Instance.StartTask("InvestigateTheHouse");
-    }
-
     public void PauseTime()
     {
         Time.timeScale = 0f;

@@ -10,7 +10,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private InteractableItemDetails currentTarget;
     private Camera _camera;
-    private bool canInteract;
+    private bool canInteract = true;
 
     private void Awake()
     {

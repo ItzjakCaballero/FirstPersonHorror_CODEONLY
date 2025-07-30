@@ -34,14 +34,17 @@ public class TaskUpdateNotificationUI : MonoBehaviour
         displayInfo.taskName = task.taskInfo.name;
         displayInfo.info = $"Step: {task.GetCurrentStepIndex() + 1}/{task.taskInfo.taskStepPrefabs.Length}";
         textInfoQueue.Enqueue(displayInfo);
-    }
+    }   
 
     private void TaskManager_OnTaskStateChanged(Task task)
     {
+        Debug.Log(task.taskInfo.taskName);
         TextInfo displayInfo = new TextInfo();
         displayInfo.taskName = task.taskInfo.name;
         switch (task.state)
         {
+            case TaskState.NotStarted:
+                return;
             case TaskState.Started:
                 displayInfo.info = "Started";
                 break;

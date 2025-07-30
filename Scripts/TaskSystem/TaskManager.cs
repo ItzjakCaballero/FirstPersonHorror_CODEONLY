@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-    public event Action<Task> OnTaskStarted;
+    public event Action<Task> OnTaskStart;
     public event Action<Task> OnTaskStateChanged;
     public event Action<Task> OnTaskAdvanced;
 
@@ -22,7 +22,7 @@ public class TaskManager : MonoBehaviour
         {
             Debug.LogError("Multiple TaskManager's actice");
         }
-            taskIdDictionary = CreateTaskIdToDictionary();
+        taskIdDictionary = CreateTaskIdToDictionary();
     }
 
     private Dictionary<string, Task> CreateTaskIdToDictionary()
@@ -45,6 +45,17 @@ public class TaskManager : MonoBehaviour
 
     private void Update()
     {
+        //Testing purposes, delete when done
+        if (taskIdDictionary["InvestigateTheHouse"].state == TaskState.NotStarted)
+        {
+            StartTask("InvestigateTheHouse");
+        }
+        if (taskIdDictionary["LearnAboutTheFamily"].state == TaskState.NotStarted)
+        {
+            StartTask("LearnAboutTheFamily");
+        }
+
+
         foreach (Task task in taskIdDictionary.Values)
         {
             if (task.state == TaskState.CantStart) //Add a check to see if player has finished task prerequisites
@@ -58,7 +69,7 @@ public class TaskManager : MonoBehaviour
     {
         Task task = GetTaskById(id);
         task.InstantiateCurrentTaskStep(transform);
-        OnTaskStarted?.Invoke(task);
+        OnTaskStart?.Invoke(task);
         ChangeTaskState(id, TaskState.Started);
     }
 

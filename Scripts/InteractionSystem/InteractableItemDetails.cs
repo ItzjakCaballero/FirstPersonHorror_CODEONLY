@@ -11,7 +11,7 @@ public class InteractableItemDetails : MonoBehaviour
     [ShowIf("showObjectName")][SerializeField] private string objectName;
     [ShowIf("showPickupDialogue")][TextArea] [SerializeField] private string pickupDialogue;
 
-    public void ChangeObjectName(string name)
+    public void SetObjectName(string name)
     {
         objectName = name;
     }

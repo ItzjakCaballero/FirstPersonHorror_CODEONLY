@@ -11,7 +11,7 @@ public class InteractableLightSwitch : Interactable
     protected void Awake()
     {
         textInspectItem = GetComponent<InteractableItemDetails>();
-        textInspectItem.ChangeObjectName("Turn on");
+        textInspectItem.SetObjectName("Turn on");
     }
 
     protected override void BaseInteract(GameObject player)
@@ -22,7 +22,7 @@ public class InteractableLightSwitch : Interactable
             {
                 light.enabled = false;
             }
-            textInspectItem.ChangeObjectName("Turn on");
+            textInspectItem.SetObjectName("Turn on");
         }
         else
         {
@@ -30,7 +30,7 @@ public class InteractableLightSwitch : Interactable
             {
                 light.enabled = true;
             }
-            textInspectItem.ChangeObjectName("Turn off");
+            textInspectItem.SetObjectName("Turn off");
         }
         isLightOn = !isLightOn;
     }

@@ -5,7 +5,7 @@ public class InteractableTaskStarter : Interactable
 {
     TaskStarter taskStarter;
 
-    private void Start()
+    private void Awake()
     {
         taskStarter = GetComponent<TaskStarter>();
     }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class InteractableDoor : Interactable
@@ -7,10 +8,9 @@ public class InteractableDoor : Interactable
 
     [Header("Door Settings")]
     [SerializeField] private Transform doorPivot;
-    [SerializeField] private float openAngle = 90f;
-    [SerializeField] private float closeAngle = 0f;
+    [SerializeField] private float rotationAmount = 90f;
     [SerializeField] private float rotationSpeed = 2f;
-    [SerializeField] private bool isDoorOpen = false;
+    [SerializeField] private bool isOpen = false;
 
     [Header("Lock Settings")]
     [SerializeField] private InventoryItemSO keyItem;
@@ -18,36 +18,29 @@ public class InteractableDoor : Interactable
     [SerializeField] private bool isLocked = false;
 
     private InteractableItemDetails textInspectItem;
-    private Quaternion targetRotation;
-    private bool isAnimating = false;
+    private Coroutine animationCoroutine;
+    private Vector3 startRotation;
+    private Vector3 forward;
 
     protected void Awake()
     {
         textInspectItem = GetComponent<InteractableItemDetails>();
-        if (isDoorOpen)
+        if (isOpen)
         {
-            textInspectItem.ChangeObjectName(DOOR_OPEN_TEXT);
+            textInspectItem.SetObjectName(DOOR_OPEN_TEXT);
         }
         else
         {
-            textInspectItem.ChangeObjectName(DOOR_CLOSED_TEXT);
+            textInspectItem.SetObjectName(DOOR_CLOSED_TEXT);
         }
 
-        targetRotation = Quaternion.Euler(0f, closeAngle, 0f);
+        startRotation = transform.rotation.eulerAngles;
+        forward = transform.right;
     }
 
-    private void Update()
+    protected override void BaseInteract(GameObject player)
     {
-        if (isAnimating)
-        {
-            doorPivot.localRotation = Quaternion.Slerp(doorPivot.localRotation, targetRotation, Time.deltaTime * rotationSpeed);
-
-            if (Quaternion.Angle(doorPivot.localRotation, targetRotation) < .1f)
-            {
-                doorPivot.localRotation = targetRotation;
-                isAnimating = false;
-            }
-        }
+        ToggleDoor(player.GetComponent<PlayerInventory>());
     }
 
     protected virtual void ToggleDoor(PlayerInventory playerInventory)
@@ -68,25 +61,76 @@ public class InteractableDoor : Interactable
             }
         }
 
-        if (!isAnimating)
+        if (isOpen)
         {
-            isDoorOpen = !isDoorOpen;
-            if (isDoorOpen)
-            {
-                textInspectItem.ChangeObjectName(DOOR_OPEN_TEXT);
-            }
-            else
-            {
-                textInspectItem.ChangeObjectName(DOOR_CLOSED_TEXT);
-            }
-
-            targetRotation = Quaternion.Euler(0f, isDoorOpen ? openAngle : closeAngle, 0f);
-            isAnimating = true;
+            Close();
+        }
+        else
+        {
+            Open(playerInventory.transform.position);
         }
     }
 
-    protected override void BaseInteract(GameObject player)
+    private void Open(Vector3 playerPosition)
     {
-        ToggleDoor(player.GetComponent<PlayerInventory>());
+        if (animationCoroutine != null)
+        {
+            StopCoroutine(animationCoroutine);
+        }
+
+        float dot = Vector3.Dot(forward, (playerPosition - transform.position).normalized);
+        Debug.Log(dot);
+        animationCoroutine = StartCoroutine(OpenCoroutine(dot));
+    }
+
+    private IEnumerator OpenCoroutine(float forwardAmount)
+    {
+        Quaternion currentRotation = transform.rotation;
+        Quaternion endRotation;
+
+        if (forwardAmount >= 0)
+        {
+            endRotation = Quaternion.Euler(new Vector3(0, startRotation.y - rotationAmount, 0));
+        }
+        else
+        {
+            endRotation = Quaternion.Euler(new Vector3(0, startRotation.y + rotationAmount, 0));
+        }
+
+        isOpen = true;
+
+        float lerpTime = 0;
+        while (lerpTime < 1)
+        {
+            transform.rotation = Quaternion.Slerp(currentRotation, endRotation, lerpTime);
+            yield return null;
+            lerpTime += Time.deltaTime * rotationSpeed;
+        }
+    }
+
+    private void Close()
+    {
+        if (animationCoroutine != null)
+        {
+            StopCoroutine(animationCoroutine);
+        }
+
+        animationCoroutine = StartCoroutine(CloseCoroutine());
+    }
+
+    private IEnumerator CloseCoroutine()
+    {
+        Quaternion currentRotation = transform.rotation;
+        Quaternion endRotation = Quaternion.Euler(startRotation);
+
+        isOpen = false;
+
+        float lerpTime = 0;
+        while (lerpTime < 1)
+        {
+            transform.rotation = Quaternion.Slerp(currentRotation, endRotation, lerpTime);
+            yield return null;
+            lerpTime += Time.deltaTime * rotationSpeed;
+        }
     }
 }

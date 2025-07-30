@@ -24,7 +24,7 @@ public class TasksInventoryUI : MonoBehaviour
 
     private void Awake()
     {
-        TaskManager.Instance.OnTaskStarted += TaskManager_OnTaskStarted;
+        TaskManager.Instance.OnTaskStart += TaskManager_OnTaskStarted;
         TaskManager.Instance.OnTaskStateChanged += TaskManager_OnTaskStateChanged;
         currentTasks = new List<TaskUIContainer>();
     }
